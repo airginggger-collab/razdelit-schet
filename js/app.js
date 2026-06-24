@@ -41,12 +41,12 @@ export function showScreen(n, direction = 'forward') {
     old.addEventListener('transitionend', () => old.remove(), { once: true });
   }
 
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      incoming.classList.remove('enter-right', 'enter-left');
-      incoming.classList.add('active');
-    });
-  });
+  // force layout before removing enter class so CSS transition fires
+  incoming.getBoundingClientRect();
+  setTimeout(() => {
+    incoming.classList.remove('enter-right', 'enter-left');
+    incoming.classList.add('active');
+  }, 16);
 
   currentScreen = incoming;
 }

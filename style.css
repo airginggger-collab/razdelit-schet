@@ -1,0 +1,116 @@
+:root {
+  --red: #E8131E;
+  --red-light: #fde8e9;
+  --green: #0F6E56;
+  --green-light: #e1f5ee;
+  --text-primary: #111;
+  --text-secondary: #555;
+  --text-tertiary: #999;
+  --bg: #f5f5f5;
+  --card: #fff;
+  --border: #e5e5e5;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+  --font: system-ui, -apple-system, sans-serif;
+  --transition: 300ms ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; background: var(--bg); font-family: var(--font); color: var(--text-primary); -webkit-tap-highlight-color: transparent; }
+
+#app { height: 100%; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; }
+
+#screen-container { flex: 1; position: relative; overflow: hidden; }
+
+/* Screen transitions */
+.screen { position: absolute; inset: 0; background: var(--bg); padding: 20px 16px 32px; overflow-y: auto; transition: transform var(--transition); display: flex; flex-direction: column; gap: 16px; }
+.screen.enter-right { transform: translateX(100%); }
+.screen.enter-left  { transform: translateX(-100%); }
+.screen.active      { transform: translateX(0); }
+.screen.exit-left   { transform: translateX(-100%); }
+.screen.exit-right  { transform: translateX(100%); }
+
+/* Typography */
+.screen-title { font-size: 22px; font-weight: 700; color: var(--text-primary); }
+.label { font-size: 13px; color: var(--text-secondary); }
+.amount-big { font-size: 36px; font-weight: 700; color: var(--text-primary); }
+.amount-note { font-size: 13px; color: var(--text-tertiary); }
+
+/* Card */
+.card { background: var(--card); border-radius: var(--radius-lg); padding: 16px; }
+
+/* Button */
+.btn-primary { width: 100%; padding: 16px; background: var(--red); color: #fff; border: none; border-radius: var(--radius-md); font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity var(--transition); margin-top: auto; }
+.btn-primary:active { opacity: 0.85; }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Back button */
+.btn-back { background: none; border: none; color: var(--red); font-size: 15px; cursor: pointer; padding: 0; display: flex; align-items: center; gap: 4px; }
+
+/* Input */
+input[type="text"], input[type="number"] {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 16px; font-family: var(--font); color: var(--text-primary); background: #fff;
+  outline: none; transition: border-color var(--transition);
+}
+input:focus { border-color: var(--red); }
+
+/* Avatar */
+.avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; flex-shrink: 0; }
+
+/* Progress bar */
+.progress-track { height: 6px; background: var(--border); border-radius: var(--radius-full); overflow: hidden; }
+.progress-fill  { height: 100%; background: var(--red); border-radius: var(--radius-full); transition: width 600ms cubic-bezier(0.34,1.56,0.64,1); }
+
+/* Participant card */
+.participant-card { display: flex; align-items: center; gap: 12px; background: var(--card); border-radius: var(--radius-md); padding: 14px; cursor: pointer; transition: background var(--transition); }
+.participant-card:active { background: #fafafa; }
+.participant-card.paid .progress-fill { background: var(--green); }
+.participant-info { flex: 1; min-width: 0; }
+.participant-name { font-size: 15px; font-weight: 500; }
+.participant-amount { font-size: 13px; color: var(--text-secondary); }
+.participant-status { font-size: 13px; font-weight: 600; color: var(--green); white-space: nowrap; }
+.participant-status.pending { color: var(--text-tertiary); }
+
+/* Divider */
+.divider { display: flex; align-items: center; gap: 8px; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.divider span { font-size: 12px; color: var(--text-tertiary); }
+
+/* Counter */
+.counter { display: flex; align-items: center; gap: 16px; }
+.counter-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: #fff; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background var(--transition); }
+.counter-btn.inc { background: var(--red); color: #fff; border-color: var(--red); }
+.counter-btn:active { opacity: 0.8; }
+.counter-value { font-size: 28px; font-weight: 700; min-width: 40px; text-align: center; }
+
+/* Items list */
+.items-list { display: flex; flex-direction: column; gap: 8px; }
+.item-row { display: flex; align-items: center; gap: 8px; }
+.item-row input[type="text"] { flex: 1; }
+.item-row input[type="number"] { width: 100px; }
+.item-row .btn-remove { background: none; border: none; color: var(--text-tertiary); font-size: 20px; cursor: pointer; padding: 0 4px; flex-shrink: 0; }
+
+/* Scan area */
+.scan-area { border: 2px dashed var(--border); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; transition: border-color var(--transition); }
+.scan-area:active { border-color: var(--red); }
+.scan-icon { font-size: 40px; }
+.scan-label { font-size: 15px; color: var(--text-secondary); text-align: center; }
+
+/* OCR status */
+.ocr-status { font-size: 13px; color: var(--text-secondary); text-align: center; padding: 8px; }
+
+/* Total summary */
+.total-card { background: var(--card); border-radius: var(--radius-lg); padding: 20px; text-align: center; }
+.total-header { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+.total-subtext { font-size: 13px; color: var(--text-tertiary); margin-top: 4px; }
+
+/* Collection header */
+.collection-header { display: flex; align-items: center; justify-content: space-between; }
+.btn-share { background: none; border: none; color: var(--red); font-size: 24px; cursor: pointer; padding: 4px; }
+
+/* Confetti canvas */
+#confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 100; }

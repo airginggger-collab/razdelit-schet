@@ -17,7 +17,123 @@
     <div id="screen-container"></div>
   </div>
 
-  <!-- Screen templates inserted in Task 3 -->
+  <!-- SCREEN 1 -->
+  <template id="tmpl-screen1">
+    <div class="screen" data-screen="1">
+      <button class="btn-back" data-action="back">← Назад</button>
+      <h1 class="screen-title">Добавить счёт</h1>
+
+      <div class="scan-area" id="scan-trigger">
+        <span class="scan-icon">📷</span>
+        <span class="scan-label">Сфоткать чек</span>
+        <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none">
+      </div>
+      <div id="ocr-status" class="ocr-status" style="display:none"></div>
+
+      <div class="divider"><span>или ввести вручную</span></div>
+
+      <div class="card">
+        <div class="label" style="margin-bottom:8px">Итого</div>
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <input type="number" id="total-input" placeholder="0" min="0" style="font-size:28px;font-weight:700;padding:8px 10px">
+          <span style="font-size:20px;color:var(--text-secondary)">₸</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="label" style="margin-bottom:8px">Позиции <span style="color:var(--text-tertiary)">(необязательно)</span></div>
+        <div class="items-list" id="items-list"></div>
+        <button id="add-item-btn" style="background:none;border:none;color:var(--red);font-size:14px;cursor:pointer;padding:8px 0;display:flex;align-items:center;gap:4px">
+          + Добавить позицию
+        </button>
+      </div>
+
+      <button class="btn-primary" id="s1-next" disabled>Далее</button>
+    </div>
+  </template>
+
+  <!-- SCREEN 2 -->
+  <template id="tmpl-screen2">
+    <div class="screen" data-screen="2">
+      <button class="btn-back" data-action="back">← Назад</button>
+      <h1 class="screen-title">Участники</h1>
+
+      <div class="card">
+        <div class="label" style="margin-bottom:12px">Нас</div>
+        <div class="counter">
+          <button class="counter-btn" id="dec-btn">−</button>
+          <span class="counter-value" id="count-display">2</span>
+          <button class="counter-btn inc" id="inc-btn">+</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="label" style="margin-bottom:8px">Имена <span style="color:var(--text-tertiary)">(необязательно)</span></div>
+        <div id="names-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+
+      <div id="items-assign-section" style="display:none">
+        <div class="label" style="margin-bottom:8px">Кто что ел</div>
+        <div id="items-assign-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+
+      <button class="btn-primary" id="s2-next">Далее</button>
+    </div>
+  </template>
+
+  <!-- SCREEN 3 -->
+  <template id="tmpl-screen3">
+    <div class="screen" data-screen="3">
+      <button class="btn-back" data-action="back">← Назад</button>
+      <h1 class="screen-title">Итог</h1>
+
+      <div class="total-card">
+        <div class="total-header" id="s3-header">Каждый платит</div>
+        <div class="amount-big" id="s3-amount"></div>
+        <div class="amount-note" id="s3-note"></div>
+      </div>
+
+      <div id="s3-items-section" style="display:none">
+        <div class="label" style="margin-bottom:8px">Позиции счёта</div>
+        <div class="card">
+          <div id="s3-items-list" style="display:flex;flex-direction:column;gap:0"></div>
+        </div>
+      </div>
+
+      <div id="s3-individual-section" style="display:none">
+        <div class="label" style="margin-bottom:8px">Индивидуально</div>
+        <div id="s3-individual-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+
+      <button class="btn-primary" id="s3-next">Начать сбор</button>
+    </div>
+  </template>
+
+  <!-- SCREEN 4 -->
+  <template id="tmpl-screen4">
+    <div class="screen" data-screen="4">
+      <div class="collection-header">
+        <h1 class="screen-title">Кто закинул</h1>
+        <button class="btn-share" id="share-btn" aria-label="Поделиться">⬆</button>
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span class="label">Собрано</span>
+          <span id="s4-collected" style="font-size:15px;font-weight:600"></span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="s4-total-bar" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div id="s4-participants" style="display:flex;flex-direction:column;gap:8px"></div>
+
+      <button class="btn-primary" id="s4-new" style="display:none">Новый счёт</button>
+
+      <canvas id="confetti-canvas" style="display:none"></canvas>
+    </div>
+  </template>
 
   <script type="module" src="js/app.js"></script>
 </body>

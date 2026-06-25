@@ -214,7 +214,7 @@ function initScreen2(el) {
         <div class="avatar" style="background:${p.color}22;color:${p.color}">${p.name ? p.name[0].toUpperCase() : (i+1)}</div>
         <div class="participant-fields">
           <input type="text" class="p-name" placeholder="Участник ${i+1}" value="${p.name}">
-          <input type="tel" class="p-phone" placeholder="Телефон (необязательно)" value="${p.phone}">
+          <input type="tel" class="p-phone" placeholder="+7 700 123 45 67" value="${p.phone}">
         </div>
         <button class="btn-friends" type="button" aria-label="Из друзей">📇</button>`;
 
@@ -369,7 +369,7 @@ function initScreen3(el) {
     indivSec.style.display = 'block';
     state.participants.forEach(p => {
       const row = document.createElement('div');
-      row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:10px;padding:12px 14px';
+      row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;background:var(--card);border-radius:12px;padding:12px 16px';
       const name = p.name || `Участник ${p.id + 1}`;
       row.innerHTML = `
         <div style="display:flex;align-items:center;gap:10px">

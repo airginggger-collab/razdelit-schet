@@ -3,11 +3,12 @@
   --red-light: #fde8e9;
   --green: #0F6E56;
   --green-light: #e1f5ee;
-  --text-primary: #111;
+  --text-primary: #171717;   /* Carbon — не чистый чёрный */
   --text-secondary: #555;
-  --text-tertiary: #999;
+  --text-tertiary: #737373;  /* контраст ≥4.5:1, не «тонкий серый» */
+  --text-inverse: #FFFAFA;   /* Snow — не чистый белый */
   --bg: #f5f5f5;
-  --card: #fff;
+  --card: #FCFCFC;           /* off-white вместо #fff */
   --border: #e5e5e5;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -42,18 +43,21 @@ html, body { height: 100%; background: var(--bg); font-family: var(--font); colo
 /* Card */
 .card { background: var(--card); border-radius: var(--radius-lg); padding: 16px; }
 
+/* Focus — клавиатурная доступность (состояние Focused) */
+button:focus-visible, [role="button"]:focus-visible, .scan-area:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+
 /* Button */
-.btn-primary { width: 100%; padding: 16px; background: var(--red); color: #fff; border: none; border-radius: var(--radius-md); font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity var(--transition); margin-top: auto; }
+.btn-primary { width: 100%; padding: 16px; background: var(--red); color: var(--text-inverse); border: none; border-radius: var(--radius-md); font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity var(--transition); margin-top: auto; }
 .btn-primary:active { opacity: 0.85; }
 .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* Back button */
-.btn-back { background: none; border: none; color: var(--red); font-size: 15px; cursor: pointer; padding: 0; display: flex; align-items: center; gap: 4px; }
+/* Back button — тач-зона ≥44px */
+.btn-back { background: none; border: none; color: var(--red); font-size: 15px; cursor: pointer; padding: 8px 4px; min-height: 44px; display: flex; align-items: center; gap: 4px; align-self: flex-start; }
 
 /* Input */
-input[type="text"], input[type="number"] {
+input[type="text"], input[type="number"], input[type="tel"] {
   width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
-  font-size: 16px; font-family: var(--font); color: var(--text-primary); background: #fff;
+  font-size: 16px; font-family: var(--font); color: var(--text-primary); background: var(--card);
   outline: none; transition: border-color var(--transition);
 }
 input:focus { border-color: var(--red); }
@@ -80,10 +84,10 @@ input:focus { border-color: var(--red); }
 .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 .divider span { font-size: 12px; color: var(--text-tertiary); }
 
-/* Counter */
+/* Counter — тач-зоны ≥44px */
 .counter { display: flex; align-items: center; gap: 16px; }
-.counter-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: #fff; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background var(--transition); }
-.counter-btn.inc { background: var(--red); color: #fff; border-color: var(--red); }
+.counter-btn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border); background: var(--card); font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background var(--transition); }
+.counter-btn.inc { background: var(--red); color: var(--text-inverse); border-color: var(--red); }
 .counter-btn:active { opacity: 0.8; }
 .counter-value { font-size: 28px; font-weight: 700; min-width: 40px; text-align: center; }
 
@@ -92,7 +96,7 @@ input:focus { border-color: var(--red); }
 .item-row { display: flex; align-items: center; gap: 8px; }
 .item-row input[type="text"] { flex: 1; }
 .item-row input[type="number"] { width: 100px; }
-.item-row .btn-remove { background: none; border: none; color: var(--text-tertiary); font-size: 20px; cursor: pointer; padding: 0 4px; flex-shrink: 0; }
+.item-row .btn-remove { background: none; border: none; color: var(--text-tertiary); font-size: 20px; cursor: pointer; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
 /* Scan area */
 .scan-area { border: 2px dashed var(--border); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; transition: border-color var(--transition); }
@@ -111,19 +115,19 @@ input:focus { border-color: var(--red); }
 
 /* Collection header */
 .collection-header { display: flex; align-items: center; justify-content: space-between; }
-.btn-share { background: none; border: none; color: var(--red); font-size: 24px; cursor: pointer; padding: 4px; }
+.btn-share { background: none; border: none; color: var(--red); font-size: 24px; cursor: pointer; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
 
 /* Confetti canvas */
 #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
 
 /* Participant row (screen 2) */
 .participant-row { display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
-.participant-fields { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.participant-fields { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .participant-fields .p-phone { font-size: 14px; padding: 8px 12px; }
-.btn-friends { background: none; border: none; font-size: 22px; cursor: pointer; padding: 4px; line-height: 1; flex-shrink: 0; }
+.btn-friends { background: none; border: none; font-size: 22px; cursor: pointer; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; line-height: 1; flex-shrink: 0; }
 
 /* Friends picker */
-.friend-picker { flex-basis: 100%; width: 100%; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.friend-picker { flex-basis: 100%; width: 100%; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
 .friend-chip { background: var(--red-light); color: var(--red); border: none; border-radius: var(--radius-full); padding: 6px 12px; font-size: 13px; cursor: pointer; }
 .friend-chip:active { opacity: 0.7; }
 .friend-empty { font-size: 13px; color: var(--text-tertiary); }
@@ -132,16 +136,16 @@ input:focus { border-color: var(--red); }
 .participant-info { position: relative; }
 .btn-remind { margin-top: 8px; background: var(--red-light); color: var(--red); border: none; border-radius: var(--radius-full); padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
 .btn-remind:active { opacity: 0.7; }
-.reminder-menu { position: absolute; left: 0; top: 100%; margin-top: 4px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: 0 6px 24px rgba(0,0,0,0.12); z-index: 50; display: flex; flex-direction: column; min-width: 160px; overflow: hidden; }
-.reminder-item { background: none; border: none; text-align: left; padding: 12px 14px; font-size: 14px; cursor: pointer; }
+.reminder-menu { position: absolute; left: 0; top: 100%; margin-top: 4px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: 0 6px 24px rgba(0,0,0,0.12); z-index: 50; display: flex; flex-direction: column; min-width: 160px; overflow: hidden; }
+.reminder-item { background: none; border: none; text-align: left; padding: 14px 16px; font-size: 14px; min-height: 44px; cursor: pointer; }
 .reminder-item:active { background: var(--bg); }
 .reminder-item + .reminder-item { border-top: 1px solid var(--border); }
 
 /* Screen 1 header + history */
 .screen1-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.btn-history { background: none; border: none; color: var(--red); font-size: 14px; font-weight: 600; cursor: pointer; padding: 4px; white-space: nowrap; }
-.history-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; background: var(--card); border: none; border-radius: var(--radius-md); padding: 14px; text-align: left; cursor: pointer; }
-.history-row:active { background: #fafafa; }
+.btn-history { background: none; border: none; color: var(--red); font-size: 14px; font-weight: 600; cursor: pointer; padding: 8px; min-height: 44px; white-space: nowrap; }
+.history-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; background: var(--card); border: none; border-radius: var(--radius-md); padding: 16px; min-height: 44px; text-align: left; cursor: pointer; }
+.history-row:active { background: #f0f0f0; }
 .history-date { font-size: 13px; color: var(--text-tertiary); }
 .history-total { font-size: 15px; font-weight: 600; }
 .history-status { font-size: 13px; font-weight: 600; white-space: nowrap; }

@@ -6,6 +6,8 @@
 
 **Architecture:** Vanilla JS single-page app with a client-side screen router (slide transitions). All state lives in a single `session` object that's serialised to localStorage and URL hash. No server, no build step — open `index.html` directly in a browser.
 
+> ⚠️ **Код ниже — исходная сборка MVP.** Несколько мест изменены багфиксами от 2026-06-25 (`sw.js` версия, парсер OCR, `initScreen3`, `initScreen4`). Актуальные сниппеты — в разделе [«Багфиксы 2026-06-25»](#багфиксы-2026-06-25) в конце файла. Дальнейшее развитие — в [2026-06-25-social-layer.md](2026-06-25-social-layer.md).
+
 **Tech Stack:** HTML5, CSS custom properties, Vanilla JS (ES modules via `<script type="module">`), Tesseract.js (lazy CDN), Canvas API for confetti, Service Worker for offline.
 
 ---
@@ -1226,3 +1228,48 @@ git commit -m "docs: add README"
 **Type consistency:** `state.participants[i].share`, `.paid`, `.paidAmount`, `.color`, `.name`, `.id` used consistently across Tasks 7, 8, 9. `state.items[i].name`, `.price` consistent across Tasks 5, 7, 8. `encodeSession` / `decodeSession` named consistently in share.js and app.js.
 
 **Placeholder scan:** no TBDs or TODOs remain in plan steps.
+
+---
+
+## Багфиксы 2026-06-25
+
+После сквозного тестирования найдено и исправлено 6 проблем. Ниже — что изменилось относительно исходных тасков выше. **Эти сниппеты — актуальный источник правды.**
+
+### 1. OCR плодил мусор и перезатирал верный «Итого»
+Парсер (`js/ocr.js`, Task 6) переписан: фильтрует не-товарные строки (ИНН/БИН, телефоны, даты, номера чеков), отделяет количество от цены, отбрасывает позиции дороже всего счёта. В `initScreen1` (Task 5/6) распознанный «Итого» больше не перезатирается суммой позиций — приоритет у явного итога. Актуальный код — в файле `js/ocr.js`.
+
+### 2. История дублировалась на каждый тап
+`updateTotals` в `initScreen4` (Task 9) больше не зовёт `saveHistory()` на каждый тап. Введён флаг `completed` — завершение (конфетти + сохранение) срабатывает один раз. *(В дальнейшем, в social-layer, заменено на upsert по `id` сессии — см. [2026-06-25-social-layer.md](2026-06-25-social-layer.md) Task 6.)*
+
+### 3. Потеря ₸ при округлении
+Добавлен `roundShares` (метод наибольшего остатка): доли квантуются в целые ₸, сумма точно равна счёту (100/3 → 33+33+34). Вызывается в обработчике «Далее» `initScreen2` (Task 7). `state.total` округляется там же.
+
+### 4. «5 человека» (склонение)
+Добавлен `pluralPeople(n)` с русскими правилами. Применён в подписях `initScreen3` (Task 8) вместо захардкоженного «человека».
+
+### 5. Кнопка «Назад» на экране 1
+Убрана из шаблона `tmpl-screen1` (Task 3) — на первом экране возвращаться некуда.
+
+### 6. Верхний бар «Собрано» оставался красным при 100%
+В `updateTotals` (Task 9) бар зеленеет при завершении: `totalBar.style.background = pct >= 100 ? 'var(--green)' : ''`.
+
+### Инфраструктура
+`sw.js` (Task 1) поднят до `razdelit-v3`: добавлен `activate`-хендлер с очисткой старых кэшей + `skipWaiting()` / `clients.claim()`, иначе пользователи получали бы старую версию из кэша.
+
+```js
+const CACHE = 'razdelit-v3';
+const ASSETS = ['./', './index.html', './style.css', './js/app.js',
+  './js/ocr.js', './js/share.js', './js/confetti.js', './manifest.json',
+  './icons/icon.svg'];
+
+self.addEventListener('install', e =>
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())));
+
+self.addEventListener('activate', e =>
+  e.waitUntil(caches.keys()
+    .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    .then(() => self.clients.claim())));
+
+self.addEventListener('fetch', e =>
+  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
+```

@@ -13,6 +13,37 @@ export const state = {
   participants: [],    // [{ id, name, color, share, paid, paidAmount }]
 };
 
+// ─── Helpers ────────────────────────────────────────────────────────────────
+// Русское склонение: 1 человек · 2 человека · 5 человек
+export function pluralPeople(n) {
+  const a = Math.abs(n) % 100, b = a % 10;
+  if (a > 10 && a < 20) return 'человек';
+  if (b > 1 && b < 5) return 'человека';
+  if (b === 1) return 'человек';
+  return 'человек';
+}
+
+// Превращает дробные доли в целые тенге, сумма которых точно равна счёту
+// (метод наибольшего остатка). Иначе три «33 ₸» давали бы 99 вместо 100.
+export function roundShares(participants, total) {
+  if (!participants.length) return participants;
+  total = Math.round(total);
+  // дробные части считаем ДО перезаписи долей
+  const parts = participants.map((p, i) => ({
+    i,
+    floor: Math.floor(p.share),
+    frac: p.share - Math.floor(p.share),
+  }));
+  let remainder = total - parts.reduce((a, p) => a + p.floor, 0);
+  participants.forEach((p, i) => (p.share = parts[i].floor));
+  // +1 ₸ тем, у кого дробная часть больше; при равенстве — старшим индексам,
+  // чтобы участник №1 в заголовке показывал базовую (меньшую) сумму
+  parts.sort((a, b) => b.frac - a.frac || b.i - a.i);
+  for (let k = 0; k < remainder && k < parts.length; k++)
+    participants[parts[k].i].share += 1;
+  return participants;
+}
+
 // ─── Router ───────────────────────────────────────────────────────────────────
 let currentScreen = null;
 
@@ -119,16 +150,22 @@ function initScreen1(el) {
       ocrStatus.style.display = 'block';
       try {
         const result = await recogniseReceipt(file, msg => ocrStatus.textContent = msg);
-        if (result.total) {
-          state.total = result.total;
-          totalInput.value = result.total;
-        }
         if (result.items.length) {
           state.items = result.items;
           renderItems();
         }
-        ocrStatus.textContent = `Распознано ${result.items.length} позиций`;
-        syncTotal();
+        // распознанный «Итого» надёжнее суммы позиций (учитывает налог/сервис),
+        // поэтому НЕ перезатираем его — иначе мусорные позиции ломали бы счёт
+        if (result.total) {
+          state.total = result.total;
+        } else if (result.items.length) {
+          state.total = result.items.reduce((a, b) => a + (b.price || 0), 0);
+        }
+        totalInput.value = state.total || '';
+        nextBtn.disabled = state.total <= 0;
+        ocrStatus.textContent = result.total || result.items.length
+          ? `Распознано: ${state.total} ₸, ${result.items.length} позиций`
+          : 'Не удалось распознать — введите вручную';
       } catch {
         ocrStatus.textContent = 'Не удалось распознать — введите вручную';
       }
@@ -231,6 +268,9 @@ function initScreen2(el) {
       const share = state.total / count;
       state.participants.forEach(p => p.share = share);
     }
+    // целые суммы, точно складывающиеся в счёт (без потери ₸ на округлении)
+    roundShares(state.participants, state.total);
+    state.total = Math.round(state.total);
     showScreen(3);
   });
 
@@ -249,18 +289,20 @@ function initScreen3(el) {
   const nextBtn    = el.querySelector('#s3-next');
 
   const fmt = n => Math.round(n).toLocaleString('ru-RU');
+  const n = state.participants.length;
+  // ≤1 ₸ разницы — это остаток округления равного деления, а не разные суммы
   const allEqual = state.participants.every(p =>
-    Math.abs(p.share - state.participants[0].share) < 1);
+    Math.abs(p.share - state.participants[0].share) < 1.5);
 
   if (allEqual) {
     headerEl.textContent = 'Каждый платит';
     amountEl.textContent = fmt(state.participants[0]?.share || 0) + ' ₸';
-    noteEl.textContent = `из ${fmt(state.total)} ₸ · ${state.participants.length} человека`;
+    noteEl.textContent = `из ${fmt(state.total)} ₸ · ${n} ${pluralPeople(n)}`;
     indivSec.style.display = 'none';
   } else {
     headerEl.textContent = 'Индивидуально';
     amountEl.textContent = fmt(state.total) + ' ₸';
-    noteEl.textContent = `итого · ${state.participants.length} человека`;
+    noteEl.textContent = `итого · ${n} ${pluralPeople(n)}`;
     indivSec.style.display = 'block';
     state.participants.forEach(p => {
       const row = document.createElement('div');
@@ -298,18 +340,21 @@ function initScreen4(el) {
   const shareBtn    = el.querySelector('#share-btn');
 
   const fmt = n => Math.round(n).toLocaleString('ru-RU');
+  let completed = false;   // чтобы конфетти/история сработали один раз за счёт
 
   function updateTotals() {
     const collected = state.participants.reduce((a, p) => a + p.paidAmount, 0);
     const pct = Math.min(100, (collected / state.total) * 100);
     collectedEl.textContent = `${fmt(collected)} / ${fmt(state.total)} ₸`;
     totalBar.style.width = pct + '%';
+    totalBar.style.background = pct >= 100 ? 'var(--green)' : '';
 
-    if (pct >= 100) {
+    if (pct >= 100 && !completed) {
+      completed = true;
       newBtn.style.display = 'block';
       import('./confetti.js').then(m => m.burst());
+      saveHistory();   // одна запись на завершённый счёт
     }
-    saveHistory();
   }
 
   function buildCards() {

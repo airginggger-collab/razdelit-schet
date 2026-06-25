@@ -2,6 +2,8 @@
 
 PWA для дележа счёта (Казахстан, ₸). Vanilla JS, без сервера, без build-step.
 
+**Прод:** https://airginggger-collab.github.io/razdelit-schet/ · Репо: `airginggger-collab/razdelit-schet` · Хостинг: GitHub Pages (project pages с ветки `main`, субпуть `/razdelit-schet/`).
+
 ## Запуск
 Статик-хостинг или `python3 -m http.server` / `npx serve`. Дев-превью: `.claude/launch.json` (имя `razdelit`, порт 3131).
 
@@ -26,8 +28,16 @@ PWA для дележа счёта (Казахстан, ₸). Vanilla JS, без
 ## Конвенции
 - Доли квантуются в целые ₸ (`roundShares`, метод наибольшего остатка) — сумма точно равна счёту.
 - Склонение «человек/человека» — `pluralPeople`.
-- Деплой: GitHub Pages с ветки `main`. **При изменении ассетов — бамп `CACHE` в `sw.js`** (иначе пользователи получат старую версию из кэша SW).
+- Деплой: GitHub Pages с ветки `main` (project pages, субпуть `/razdelit-schet/`). Прод = HEAD `main`, пуш в `main` → автодеплой. **Пути к ассетам — относительные** (`./style.css`, `./js/…`), потому что project pages раздаются с субпути, а не с корня домена.
+- **При изменении ассетов — бамп `CACHE` в `sw.js`** (сейчас `razdelit-v6`; иначе у клиентов залипает старый service-worker-кэш и они получат старую версию).
 - **Документация и контекст обновляются в том же коммите, что и код.**
+
+## Проверка после деплоя
+1. **Локаль = remote.** `git rev-parse HEAD` == `git rev-parse origin/main` (прод собирается с HEAD `main`).
+2. **Build прошёл с HEAD.** Settings → Pages → последний build, либо `gh api repos/airginggger-collab/razdelit-schet/pages/builds/latest` — commit совпадает с HEAD.
+3. **Прод-ассеты = локальные.** Сверить хэши ключевых файлов:
+   `curl -s https://airginggger-collab.github.io/razdelit-schet/style.css | shasum` vs `shasum style.css` (и так же `js/app.js`, `sw.js`).
+4. **Кэш SW.** Если менялись ассеты — убедиться, что `CACHE` в `sw.js` подняли (иначе клиенты не увидят обновление).
 
 ## Дизайн-конвенции
 Следуем «Основам формирования дизайна» (рубрик в чате 2026-06-25):

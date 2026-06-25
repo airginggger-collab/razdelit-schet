@@ -1,5 +1,6 @@
 // js/app.js
-import { encodeSession, decodeSession } from './share.js';
+import { encodeSession, decodeSession, reminderText, whatsappUrl, telegramUrl } from './share.js';
+import { listFriends, saveFriend, removeFriend, saveSession, listSessions, getSession } from './store.js';
 
 // ─── State ────────────────────────────────────────────────────────────────────
 export const COLORS = [
@@ -7,10 +8,11 @@ export const COLORS = [
 ];
 
 export const state = {
+  id: null,
   total: 0,
   currency: '₸',
   items: [],           // [{ name, price }]
-  participants: [],    // [{ id, name, color, share, paid, paidAmount }]
+  participants: [],    // [{ id, name, phone, color, share, paid, paidAmount }]
 };
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -191,6 +193,7 @@ function initScreen2(el) {
     state.participants = Array.from({ length: count }, (_, i) => ({
       id: i,
       name: existing[i]?.name || '',
+      phone: existing[i]?.phone || '',
       color: COLORS[i % COLORS.length],
       share: 0, paid: false, paidAmount: 0,
     }));
@@ -201,19 +204,70 @@ function initScreen2(el) {
     namesList.innerHTML = '';
     state.participants.forEach((p, i) => {
       const row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:center;gap:8px';
+      row.className = 'participant-row';
       row.innerHTML = `
         <div class="avatar" style="background:${p.color}22;color:${p.color}">${p.name ? p.name[0].toUpperCase() : (i+1)}</div>
-        <input type="text" placeholder="Участник ${i+1}" value="${p.name}" style="flex:1">`;
-      row.querySelector('input').addEventListener('input', e => {
+        <div class="participant-fields">
+          <input type="text" class="p-name" placeholder="Участник ${i+1}" value="${p.name}">
+          <input type="tel" class="p-phone" placeholder="Телефон (необязательно)" value="${p.phone}">
+        </div>
+        <button class="btn-friends" type="button" aria-label="Из друзей">📇</button>`;
+
+      const nameInput  = row.querySelector('.p-name');
+      const phoneInput = row.querySelector('.p-phone');
+      nameInput.addEventListener('input', e => {
         state.participants[i].name = e.target.value;
         const av = row.querySelector('.avatar');
         av.textContent = e.target.value ? e.target.value[0].toUpperCase() : (i+1);
         renderItemsAssign();
       });
+      phoneInput.addEventListener('input', e => {
+        state.participants[i].phone = e.target.value;
+      });
+      row.querySelector('.btn-friends').addEventListener('click', () => openFriendPicker(i, nameInput, phoneInput, row));
+
       namesList.appendChild(row);
     });
     renderItemsAssign();
+  }
+
+  function openFriendPicker(i, nameInput, phoneInput, row) {
+    row.querySelector('.friend-picker')?.remove();
+    const friends = listFriends();
+    const box = document.createElement('div');
+    box.className = 'friend-picker';
+    if (!friends.length) {
+      box.innerHTML = `<span class="friend-empty">Нет сохранённых</span>`;
+    } else {
+      friends.forEach(f => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'friend-chip';
+        chip.textContent = f.name || f.phone;
+        chip.addEventListener('click', () => {
+          state.participants[i].name = f.name;
+          state.participants[i].phone = f.phone;
+          nameInput.value = f.name;
+          phoneInput.value = f.phone;
+          nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+          box.remove();
+        });
+        // долгое нажатие = удалить друга
+        let t;
+        chip.addEventListener('pointerdown', () => {
+          t = setTimeout(() => {
+            if (confirm(`Удалить ${f.name || f.phone} из друзей?`)) {
+              removeFriend(f.phone);
+              chip.remove();
+            }
+          }, 600);
+        });
+        chip.addEventListener('pointerup', () => clearTimeout(t));
+        chip.addEventListener('pointerleave', () => clearTimeout(t));
+        box.appendChild(chip);
+      });
+    }
+    row.appendChild(box);
   }
 
   function renderItemsAssign() {
@@ -254,6 +308,10 @@ function initScreen2(el) {
   });
 
   nextBtn.addEventListener('click', () => {
+    // автосохранение друзей с именем+номером
+    state.participants.forEach(p => {
+      if (p.name?.trim() && p.phone?.trim()) saveFriend({ name: p.name, phone: p.phone });
+    });
     if (state.items.length) {
       state.participants.forEach(p => p.share = 0);
       state.items.forEach((item, ii) => {

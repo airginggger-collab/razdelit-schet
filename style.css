@@ -114,3 +114,15 @@ input:focus { border-color: var(--red); }
 
 /* Confetti canvas */
 #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
+
+/* Participant row (screen 2) */
+.participant-row { display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+.participant-fields { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.participant-fields .p-phone { font-size: 14px; padding: 8px 12px; }
+.btn-friends { background: none; border: none; font-size: 22px; cursor: pointer; padding: 4px; line-height: 1; flex-shrink: 0; }
+
+/* Friends picker */
+.friend-picker { flex-basis: 100%; width: 100%; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.friend-chip { background: var(--red-light); color: var(--red); border: none; border-radius: var(--radius-full); padding: 6px 12px; font-size: 13px; cursor: pointer; }
+.friend-chip:active { opacity: 0.7; }
+.friend-empty { font-size: 13px; color: var(--text-tertiary); }

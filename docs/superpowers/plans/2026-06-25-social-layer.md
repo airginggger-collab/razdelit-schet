@@ -38,14 +38,14 @@ The working tree holds yesterday's verified bugfixes (`index.html`, `js/app.js`,
 - Modify: `docs/superpowers/specs/2026-06-24-razdelit-schet-design.md`
 - Modify: `docs/superpowers/plans/2026-06-24-razdelit-schet-plan.md`
 
-- [ ] **Step 1: Update MVP spec to match current code**
+- [x] **Step 1: Update MVP spec to match current code**
 
 In `2026-06-24-razdelit-schet-design.md`:
 - Screen-transitions line ("Кнопка «назад» на каждом экране") → change to: "Кнопка «назад» на экранах 2–3 (на экране 1 её нет — возвращаться некуда)."
 - OCR section → append: "Парсер фильтрует не-товарные строки (ИНН/БИН, телефоны, даты, номера чеков), отделяет количество от цены и отбрасывает позиции дороже всего счёта. Распознанный «Итого» имеет приоритет над суммой позиций."
 - Под «Данные» добавить: "Доли участников квантуются в целые ₸ методом наибольшего остатка (`roundShares`), чтобы сумма выводимых сумм точно равнялась счёту. Русское склонение «человек/человека» — через `pluralPeople`."
 
-- [ ] **Step 2: Update MVP plan to match current code**
+- [x] **Step 2: Update MVP plan to match current code**
 
 In `2026-06-24-razdelit-schet-plan.md`, update the code blocks that drifted:
 - Task 1 Step 3 `sw.js` → `razdelit-v3` with `activate` cleanup + `skipWaiting`/`clients.claim` (current content of `sw.js` before this plan's Task 8 bumps it to v4).
@@ -54,7 +54,7 @@ In `2026-06-24-razdelit-schet-plan.md`, update the code blocks that drifted:
 - Task 9 `initScreen4` `updateTotals` → reflect the `completed` guard + green bar.
 - Add a short "## Багфиксы 2026-06-25" section listing the 6 fixes (back button, OCR junk/total-clobber, history dup, rounding, pluralization, green bar) so the plan's history is honest.
 
-- [ ] **Step 3: Verify app still loads clean (no regression from doc edits — docs only)**
+- [x] **Step 3: Verify app still loads clean (no regression from doc edits — docs only)**
 
 Run via `preview_eval` on the running server:
 ```js
@@ -62,7 +62,7 @@ location.reload()
 ```
 Then `preview_console_logs` (level all) → Expected: no logs/errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add index.html js/app.js js/ocr.js sw.js \
@@ -78,7 +78,7 @@ git commit -m "fix: OCR junk filter, history dedup, rounding, pluralization, scr
 **Files:**
 - Create: `js/store.js`
 
-- [ ] **Step 1: Write the assertion test (run later in Step 4)**
+- [x] **Step 1: Write the assertion test (run later in Step 4)**
 
 Save this snippet for Step 4 — it exercises every export:
 ```js
@@ -112,7 +112,7 @@ Save this snippet for Step 4 — it exercises every export:
 })()
 ```
 
-- [ ] **Step 2: Implement `js/store.js`**
+- [x] **Step 2: Implement `js/store.js`**
 
 ```js
 // js/store.js — localStorage persistence: friends + history. No DOM.
@@ -172,11 +172,11 @@ export function saveSession(session) {
 }
 ```
 
-- [ ] **Step 3: Add `js/store.js` to the running server's reach**
+- [x] **Step 3: Add `js/store.js` to the running server's reach**
 
 No build step — the file is served statically. Ensure the dev server is running (`preview_start` name `razdelit`).
 
-- [ ] **Step 4: Run the assertion snippet from Step 1 via `preview_eval`**
+- [x] **Step 4: Run the assertion snippet from Step 1 via `preview_eval`**
 
 Expected result:
 ```json
@@ -184,7 +184,7 @@ Expected result:
   "histCount": 2, "histAFirst": "b", "histAPaid": 100, "afterRemove": 0 }
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add js/store.js
@@ -198,7 +198,7 @@ git commit -m "feat: store.js — friends and history localStorage layer"
 **Files:**
 - Modify: `js/share.js`
 
-- [ ] **Step 1: Save the assertion test for Step 4**
+- [x] **Step 1: Save the assertion test for Step 4**
 
 ```js
 (async () => {
@@ -228,7 +228,7 @@ git commit -m "feat: store.js — friends and history localStorage layer"
 })()
 ```
 
-- [ ] **Step 2: Replace `js/share.js` with the extended version**
+- [x] **Step 2: Replace `js/share.js` with the extended version**
 
 ```js
 // js/share.js — URL hash encode/decode + deep-link builders. Pure.
@@ -277,11 +277,11 @@ export function telegramUrl(url, text) {
 }
 ```
 
-- [ ] **Step 3: Add `js/store.js` import note**
+- [x] **Step 3: Add `js/store.js` import note**
 
 `share.js` now imports `normalizePhone` from `store.js` — both are ES modules loaded statically, no build needed. (Task 8 adds `store.js` to the SW cache.)
 
-- [ ] **Step 4: Run the Step 1 assertion via `preview_eval`**
+- [x] **Step 4: Run the Step 1 assertion via `preview_eval`**
 
 Expected:
 ```json
@@ -289,7 +289,7 @@ Expected:
   "textHasAmount": true, "textHasUrl": true, "waOk": true, "tgOk": true }
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add js/share.js
@@ -304,14 +304,14 @@ git commit -m "feat: strip phones from shared URL + WhatsApp/Telegram deep-link 
 - Modify: `js/app.js` (`initScreen2`, and its import header)
 - Modify: `style.css`
 
-- [ ] **Step 1: Add the store import at the top of `js/app.js`**
+- [x] **Step 1: Add the store import at the top of `js/app.js`**
 
 Below the existing `import { encodeSession, decodeSession } from './share.js';` add:
 ```js
 import { listFriends, saveFriend, removeFriend } from './store.js';
 ```
 
-- [ ] **Step 2: Add `phone: ''` to the participant factory in `initScreen2`'s `buildParticipants`**
+- [x] **Step 2: Add `phone: ''` to the participant factory in `initScreen2`'s `buildParticipants`**
 
 Find in `buildParticipants`:
 ```js
@@ -333,7 +333,7 @@ Replace the object body's last line region to include phone:
     }));
 ```
 
-- [ ] **Step 3: Replace `renderNames` in `initScreen2` to add a phone input + friends picker**
+- [x] **Step 3: Replace `renderNames` in `initScreen2` to add a phone input + friends picker**
 
 ```js
   function renderNames() {
@@ -408,7 +408,7 @@ Replace the object body's last line region to include phone:
   }
 ```
 
-- [ ] **Step 4: Autosave friends on «Далее» — add to the top of the `nextBtn` click handler in `initScreen2`**
+- [x] **Step 4: Autosave friends on «Далее» — add to the top of the `nextBtn` click handler in `initScreen2`**
 
 The handler currently starts with `nextBtn.addEventListener('click', () => {`. Insert as the FIRST lines inside it:
 ```js
@@ -417,7 +417,7 @@ The handler currently starts with `nextBtn.addEventListener('click', () => {`. I
     });
 ```
 
-- [ ] **Step 5: Add CSS to `style.css`** (append at end)
+- [x] **Step 5: Add CSS to `style.css`** (append at end)
 
 ```css
 /* Participant row (screen 2) */
@@ -433,7 +433,7 @@ The handler currently starts with `nextBtn.addEventListener('click', () => {`. I
 .friend-empty { font-size: 13px; color: var(--text-tertiary); }
 ```
 
-- [ ] **Step 6: Verify in mobile preview**
+- [x] **Step 6: Verify in mobile preview**
 
 1. `preview_resize` mobile. Reload. Enter total `6000` → Далее.
 2. Screen 2 shows each participant with name + phone field + 📇.
@@ -444,7 +444,7 @@ The handler currently starts with `nextBtn.addEventListener('click', () => {`. I
 
 Use `preview_screenshot` + `preview_eval` to confirm.
 
-- [ ] **Step 7: Commit (code + no doc drift; spec already covers this)**
+- [x] **Step 7: Commit (code + no doc drift; spec already covers this)**
 
 ```bash
 git add js/app.js style.css
@@ -459,14 +459,14 @@ git commit -m "feat: screen 2 phone field, friends picker, and friend autosave"
 - Modify: `js/app.js` (`initScreen4` `buildCards`, and import header)
 - Modify: `style.css`
 
-- [ ] **Step 1: Extend the share import in `js/app.js`**
+- [x] **Step 1: Extend the share import in `js/app.js`**
 
 Change the existing import line to:
 ```js
 import { encodeSession, decodeSession, reminderText, whatsappUrl, telegramUrl } from './share.js';
 ```
 
-- [ ] **Step 2: Add a reminder helper inside `initScreen4` (above `buildCards`)**
+- [x] **Step 2: Add a reminder helper inside `initScreen4` (above `buildCards`)**
 
 ```js
   function shareUrl() {
@@ -506,7 +506,7 @@ import { encodeSession, decodeSession, reminderText, whatsappUrl, telegramUrl } 
   }
 ```
 
-- [ ] **Step 3: Add a «Напомнить» button to each card in `buildCards`**
+- [x] **Step 3: Add a «Напомнить» button to each card in `buildCards`**
 
 In `buildCards`, the card `innerHTML` ends with the status div. After building `card.innerHTML`, and BEFORE the `card.addEventListener('click', ...)` tap handler, insert a reminder button that does not trigger the "mark paid" tap:
 
@@ -523,7 +523,7 @@ Add this just after `card.innerHTML = \`...\`;`:
       card.querySelector('.participant-info').appendChild(remindBtn);
 ```
 
-- [ ] **Step 4: Add CSS to `style.css`** (append)
+- [x] **Step 4: Add CSS to `style.css`** (append)
 
 ```css
 /* Reminder button + menu (screen 4) */
@@ -536,7 +536,7 @@ Add this just after `card.innerHTML = \`...\`;`:
 .reminder-item + .reminder-item { border-top: 1px solid var(--border); }
 ```
 
-- [ ] **Step 5: Verify in mobile preview**
+- [x] **Step 5: Verify in mobile preview**
 
 1. Full flow: total 6000 → 2 participants, give row 1 a phone → split → tracker.
 2. Each card shows «Напомнить». Tap it → menu appears.
@@ -544,7 +544,7 @@ Add this just after `card.innerHTML = \`...\`;`:
 4. Participant WITHOUT phone → no WhatsApp.
 5. `preview_eval` to read the generated `whatsappUrl`/`telegramUrl` (call `openReminder` is DOM; instead assert builders directly): confirm tapping «Напомнить» does NOT mark the card paid (status still «ждём»).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add js/app.js style.css
@@ -559,14 +559,14 @@ git commit -m "feat: per-participant reminder menu — WhatsApp/Telegram/share/c
 - Modify: `js/app.js` (`initScreen4`, `saveHistory`, state)
 - Modify: `js/store.js` import in app
 
-- [ ] **Step 1: Import `saveSession` in `js/app.js`**
+- [x] **Step 1: Import `saveSession` in `js/app.js`**
 
 Extend the store import:
 ```js
 import { listFriends, saveFriend, removeFriend, saveSession, listSessions, getSession } from './store.js';
 ```
 
-- [ ] **Step 2: Add `id` to the state object**
+- [x] **Step 2: Add `id` to the state object**
 
 Find:
 ```js
@@ -588,14 +588,14 @@ export const state = {
 };
 ```
 
-- [ ] **Step 3: Assign `id` on entering the tracker — at the top of `initScreen4`**
+- [x] **Step 3: Assign `id` on entering the tracker — at the top of `initScreen4`**
 
 Add as the first line of `initScreen4`:
 ```js
   if (!state.id) state.id = (crypto.randomUUID?.() || ('s' + Date.now() + Math.round(Math.random() * 1e6)));
 ```
 
-- [ ] **Step 4: Replace the standalone `saveHistory` function to upsert via store**
+- [x] **Step 4: Replace the standalone `saveHistory` function to upsert via store**
 
 Find the current `saveHistory` (it reads/writes `localStorage` directly) and replace its body:
 ```js
@@ -605,7 +605,7 @@ function saveHistory() {
 ```
 (`saveSession` handles the 10-item cap and date.)
 
-- [ ] **Step 5: Clear `id` on «Новый счёт»**
+- [x] **Step 5: Clear `id` on «Новый счёт»**
 
 In the `newBtn` click handler inside `initScreen4`, the reset currently is:
 ```js
@@ -616,7 +616,7 @@ Change to also clear id:
     Object.assign(state, { id: null, total: 0, currency: '₸', items: [], participants: [] });
 ```
 
-- [ ] **Step 6: Verify history upserts (no dup, partial persists)**
+- [x] **Step 6: Verify history upserts (no dup, partial persists)**
 
 `preview_eval`:
 ```js
@@ -632,7 +632,7 @@ Change to also clear id:
 ```
 Expected after one tap of a 2-person bill: `{ count: 1, firstHasId: true, paidSoFar: 1 }`. Tap the second → still `count: 1`, `paidSoFar: 2`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add js/app.js
@@ -648,7 +648,7 @@ git commit -m "feat: session id + history upsert (one entry per bill, keeps part
 - Modify: `js/app.js` (router accepts `'history'`, `initScreenHistory`)
 - Modify: `style.css`
 
-- [ ] **Step 1: Add «История» button to screen 1 template in `index.html`**
+- [x] **Step 1: Add «История» button to screen 1 template in `index.html`**
 
 In `tmpl-screen1`, replace the title line:
 ```html
@@ -662,7 +662,7 @@ with a header row:
       </div>
 ```
 
-- [ ] **Step 2: Add the history template before `</body>` in `index.html`**
+- [x] **Step 2: Add the history template before `</body>` in `index.html`**
 
 ```html
   <!-- HISTORY -->
@@ -675,7 +675,7 @@ with a header row:
   </template>
 ```
 
-- [ ] **Step 3: Generalize the router in `js/app.js` to accept a string screen id**
+- [x] **Step 3: Generalize the router in `js/app.js` to accept a string screen id**
 
 Replace the top of `showScreen`:
 ```js
@@ -708,14 +708,14 @@ with:
 
 Note: the generic back wiring uses `showScreen(n - 1)`. For `n === 'history'`, `n - 1` is `NaN` → `tmpl-screenNaN` → `showScreen` returns early (harmless). The explicit `back-home` handler is what navigates.
 
-- [ ] **Step 4: Wire the «История» button — at the end of `initScreen1`**
+- [x] **Step 4: Wire the «История» button — at the end of `initScreen1`**
 
 Add before the closing brace of `initScreen1`:
 ```js
   el.querySelector('#open-history')?.addEventListener('click', () => showScreen('history'));
 ```
 
-- [ ] **Step 5: Add `initScreenHistory` in `js/app.js`** (next to the other inits)
+- [x] **Step 5: Add `initScreenHistory` in `js/app.js`** (next to the other inits)
 
 ```js
 function initScreenHistory(el) {
@@ -752,7 +752,7 @@ function initScreenHistory(el) {
 }
 ```
 
-- [ ] **Step 6: Add CSS to `style.css`** (append)
+- [x] **Step 6: Add CSS to `style.css`** (append)
 
 ```css
 /* Screen 1 header + history */
@@ -768,7 +768,7 @@ function initScreenHistory(el) {
 .history-empty { font-size: 14px; color: var(--text-tertiary); text-align: center; padding: 32px 0; }
 ```
 
-- [ ] **Step 7: Verify in mobile preview**
+- [x] **Step 7: Verify in mobile preview**
 
 1. Reload. Complete one bill fully + start another and pay it partially (so history has 2 entries).
 2. From screen 1, tap «📜 История» → list shows both, newest first, one `✅ собрано`, one `⏳ X / Y`.
@@ -776,7 +776,7 @@ function initScreenHistory(el) {
 4. «Назад» from history → screen 1.
 5. `preview_screenshot` to confirm layout.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add index.html js/app.js style.css
@@ -790,7 +790,7 @@ git commit -m "feat: history screen with restore + router named-screen support"
 **Files:**
 - Modify: `sw.js`
 
-- [ ] **Step 1: Bump cache + add `store.js`**
+- [x] **Step 1: Bump cache + add `store.js`**
 
 Change the first two lines of `sw.js`:
 ```js
@@ -807,7 +807,7 @@ const ASSETS = ['./', './index.html', './style.css', './js/app.js',
   './manifest.json', './icons/icon.svg'];
 ```
 
-- [ ] **Step 2: Verify SW updates and caches store.js**
+- [x] **Step 2: Verify SW updates and caches store.js**
 
 `preview_eval`:
 ```js
@@ -823,7 +823,7 @@ const ASSETS = ['./', './index.html', './style.css', './js/app.js',
 ```
 Expected: `keys` contains `"razdelit-v4"` and `hasStore: true`. (May require one reload for the new SW to activate.)
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add sw.js
@@ -841,7 +841,7 @@ Per the standing rule, finish by making the project context and the social-layer
 - Modify: `docs/superpowers/specs/2026-06-25-social-layer-design.md` (status note)
 - Modify: `docs/superpowers/plans/2026-06-25-social-layer.md` (check the boxes)
 
-- [ ] **Step 1: Create `CLAUDE.md`**
+- [x] **Step 1: Create `CLAUDE.md`**
 
 ```markdown
 # CLAUDE.md — Разделить счёт
@@ -879,17 +879,17 @@ PWA для дележа счёта (Казахстан, ₸). Vanilla JS, без
 Реал-тайм-синк между устройствами; авто-отправка напоминаний; Telegram по номеру напрямую.
 ```
 
-- [ ] **Step 2: Mark the social-layer spec as shipped**
+- [x] **Step 2: Mark the social-layer spec as shipped**
 
 In `2026-06-25-social-layer-design.md` change `**Статус:** утверждён` → `**Статус:** реализован 2026-06-25`.
 
-- [ ] **Step 3: Check all boxes in this plan** (`- [ ]` → `- [x]`) to reflect completion.
+- [x] **Step 3: Check all boxes in this plan** (`- [ ]` → `- [x]`) to reflect completion.
 
-- [ ] **Step 4: Final regression pass in preview**
+- [x] **Step 4: Final regression pass in preview**
 
 Full end-to-end: manual bill → phones + friend save → split → tracker → reminder menu → history → restore. `preview_console_logs` level all → no errors. `preview_screenshot` of tracker + history.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add CLAUDE.md docs/superpowers/specs/2026-06-25-social-layer-design.md docs/superpowers/plans/2026-06-25-social-layer.md

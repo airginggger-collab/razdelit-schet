@@ -1,7 +1,7 @@
-const CACHE = 'razdelit-v3';
+const CACHE = 'razdelit-v4';
 const ASSETS = ['./', './index.html', './style.css', './js/app.js',
-  './js/ocr.js', './js/share.js', './js/confetti.js', './manifest.json',
-  './icons/icon.svg'];
+  './js/ocr.js', './js/share.js', './js/store.js', './js/confetti.js',
+  './manifest.json', './icons/icon.svg'];
 
 self.addEventListener('install', e =>
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())));

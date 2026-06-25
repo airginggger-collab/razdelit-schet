@@ -1,4 +1,4 @@
-const CACHE = 'razdelit-v4';
+const CACHE = 'razdelit-v5';
 const ASSETS = ['./', './index.html', './style.css', './js/app.js',
   './js/ocr.js', './js/share.js', './js/store.js', './js/confetti.js',
   './manifest.json', './icons/icon.svg'];

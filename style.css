@@ -99,6 +99,7 @@ input:focus { border-color: var(--red); }
 .scan-area:active { border-color: var(--red); }
 .scan-icon { font-size: 40px; }
 .scan-label { font-size: 15px; color: var(--text-secondary); text-align: center; }
+.scan-hint { font-size: 12px; color: var(--text-tertiary); text-align: center; }
 
 /* OCR status */
 .ocr-status { font-size: 13px; color: var(--text-secondary); text-align: center; padding: 8px; }

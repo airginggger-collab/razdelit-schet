@@ -50,7 +50,8 @@ export function roundShares(participants, total) {
 let currentScreen = null;
 
 export function showScreen(n, direction = 'forward') {
-  const tmpl = document.getElementById(`tmpl-screen${n}`);
+  const tmpl = document.getElementById(
+    typeof n === 'number' ? `tmpl-screen${n}` : `tmpl-screen-${n}`);
   if (!tmpl) return;
   const container = document.getElementById('screen-container');
 
@@ -58,12 +59,15 @@ export function showScreen(n, direction = 'forward') {
   incoming.classList.add(direction === 'forward' ? 'enter-right' : 'enter-left');
   container.appendChild(incoming);
 
-  // wire up back buttons
+  // wire up back buttons (числовой поток → n-1)
   incoming.querySelectorAll('[data-action="back"]').forEach(btn =>
     btn.addEventListener('click', () => showScreen(n - 1, 'backward')));
+  // именованный «Назад на главную» (для экрана истории)
+  incoming.querySelectorAll('[data-action="back-home"]').forEach(btn =>
+    btn.addEventListener('click', () => showScreen(1, 'backward')));
 
   // screen-specific init
-  const inits = { 1: initScreen1, 2: initScreen2, 3: initScreen3, 4: initScreen4 };
+  const inits = { 1: initScreen1, 2: initScreen2, 3: initScreen3, 4: initScreen4, history: initScreenHistory };
   if (inits[n]) inits[n](incoming);
 
   // animate out old screen
@@ -175,6 +179,7 @@ function initScreen1(el) {
   });
 
   nextBtn.addEventListener('click', () => showScreen(2));
+  el.querySelector('#open-history')?.addEventListener('click', () => showScreen('history'));
 
   renderItems();
   syncTotal();
@@ -535,6 +540,39 @@ function initScreen4(el) {
 
   buildCards();
   updateTotals();
+}
+
+function initScreenHistory(el) {
+  const list = el.querySelector('#history-list');
+  const sessions = listSessions();
+  const fmt = n => Math.round(n).toLocaleString('ru-RU');
+
+  if (!sessions.length) {
+    list.innerHTML = `<div class="history-empty">Пока счетов нет</div>`;
+    return;
+  }
+
+  sessions.forEach(s => {
+    const collected = (s.participants || []).reduce((a, p) => a + (p.paidAmount || 0), 0);
+    const done = collected >= s.total && s.total > 0;
+    const date = s.date
+      ? new Date(s.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
+      : '';
+    const status = done ? '✅ собрано' : `⏳ ${fmt(collected)} / ${fmt(s.total)} ₸`;
+
+    const row = document.createElement('button');
+    row.type = 'button';
+    row.className = 'history-row';
+    row.innerHTML = `
+      <span class="history-date">${date}</span>
+      <span class="history-total">${fmt(s.total)} ₸</span>
+      <span class="history-status ${done ? 'done' : 'pending'}">${status}</span>`;
+    row.addEventListener('click', () => {
+      Object.assign(state, getSession(s.id));
+      showScreen(4);
+    });
+    list.appendChild(row);
+  });
 }
 
 function saveHistory() {

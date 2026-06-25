@@ -135,3 +135,15 @@ input:focus { border-color: var(--red); }
 .reminder-item { background: none; border: none; text-align: left; padding: 12px 14px; font-size: 14px; cursor: pointer; }
 .reminder-item:active { background: var(--bg); }
 .reminder-item + .reminder-item { border-top: 1px solid var(--border); }
+
+/* Screen 1 header + history */
+.screen1-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.btn-history { background: none; border: none; color: var(--red); font-size: 14px; font-weight: 600; cursor: pointer; padding: 4px; white-space: nowrap; }
+.history-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; background: var(--card); border: none; border-radius: var(--radius-md); padding: 14px; text-align: left; cursor: pointer; }
+.history-row:active { background: #fafafa; }
+.history-date { font-size: 13px; color: var(--text-tertiary); }
+.history-total { font-size: 15px; font-weight: 600; }
+.history-status { font-size: 13px; font-weight: 600; white-space: nowrap; }
+.history-status.done { color: var(--green); }
+.history-status.pending { color: var(--text-tertiary); }
+.history-empty { font-size: 14px; color: var(--text-tertiary); text-align: center; padding: 32px 0; }

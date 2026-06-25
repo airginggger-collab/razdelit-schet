@@ -20,7 +20,10 @@
   <!-- SCREEN 1 -->
   <template id="tmpl-screen1">
     <div class="screen" data-screen="1">
-      <h1 class="screen-title">Добавить счёт</h1>
+      <div class="screen1-header">
+        <h1 class="screen-title">Добавить счёт</h1>
+        <button class="btn-history" id="open-history" type="button">📜 История</button>
+      </div>
 
       <div class="scan-area" id="scan-trigger">
         <span class="scan-icon">📷</span>
@@ -131,6 +134,15 @@
       <button class="btn-primary" id="s4-new" style="display:none">Новый счёт</button>
 
       <canvas id="confetti-canvas" style="display:none"></canvas>
+    </div>
+  </template>
+
+  <!-- HISTORY -->
+  <template id="tmpl-screen-history">
+    <div class="screen" data-screen="history">
+      <button class="btn-back" data-action="back-home">← Назад</button>
+      <h1 class="screen-title">История</h1>
+      <div id="history-list" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
   </template>
 

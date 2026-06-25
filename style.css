@@ -126,3 +126,12 @@ input:focus { border-color: var(--red); }
 .friend-chip { background: var(--red-light); color: var(--red); border: none; border-radius: var(--radius-full); padding: 6px 12px; font-size: 13px; cursor: pointer; }
 .friend-chip:active { opacity: 0.7; }
 .friend-empty { font-size: 13px; color: var(--text-tertiary); }
+
+/* Reminder button + menu (screen 4) */
+.participant-info { position: relative; }
+.btn-remind { margin-top: 8px; background: var(--red-light); color: var(--red); border: none; border-radius: var(--radius-full); padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.btn-remind:active { opacity: 0.7; }
+.reminder-menu { position: absolute; left: 0; top: 100%; margin-top: 4px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: 0 6px 24px rgba(0,0,0,0.12); z-index: 50; display: flex; flex-direction: column; min-width: 160px; overflow: hidden; }
+.reminder-item { background: none; border: none; text-align: left; padding: 12px 14px; font-size: 14px; cursor: pointer; }
+.reminder-item:active { background: var(--bg); }
+.reminder-item + .reminder-item { border-top: 1px solid var(--border); }

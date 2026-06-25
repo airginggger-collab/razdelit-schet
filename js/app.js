@@ -391,6 +391,7 @@ function initScreen3(el) {
 }
 
 function initScreen4(el) {
+  if (!state.id) state.id = (crypto.randomUUID?.() || ('s' + Date.now() + Math.round(Math.random() * 1e6)));
   const collectedEl = el.querySelector('#s4-collected');
   const totalBar    = el.querySelector('#s4-total-bar');
   const pList       = el.querySelector('#s4-participants');
@@ -411,8 +412,42 @@ function initScreen4(el) {
       completed = true;
       newBtn.style.display = 'block';
       import('./confetti.js').then(m => m.burst());
-      saveHistory();   // одна запись на завершённый счёт
     }
+    saveHistory();   // upsert: одна запись на счёт, прогресс персистится
+  }
+
+  function shareUrl() {
+    return location.origin + location.pathname + encodeSession(state);
+  }
+
+  function openReminder(p, anchor) {
+    document.querySelector('.reminder-menu')?.remove();
+    const url = shareUrl();
+    const text = reminderText(p, url, state.currency);
+    const menu = document.createElement('div');
+    menu.className = 'reminder-menu';
+
+    const items = [];
+    if ((p.phone || '').replace(/\D/g, ''))
+      items.push(['WhatsApp', () => window.open(whatsappUrl(p.phone, text), '_blank')]);
+    items.push(['Telegram', () => window.open(telegramUrl(url, text), '_blank')]);
+    if (navigator.share)
+      items.push(['Поделиться', () => navigator.share({ text, url }).catch(() => {})]);
+    items.push(['Скопировать', () => { navigator.clipboard?.writeText(text).catch(() => {}); }]);
+
+    items.forEach(([label, fn]) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'reminder-item';
+      b.textContent = label;
+      b.addEventListener('click', () => { fn(); menu.remove(); });
+      menu.appendChild(b);
+    });
+    anchor.appendChild(menu);
+    // закрыть по клику вне меню
+    setTimeout(() => document.addEventListener('click', function off(e) {
+      if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', off); }
+    }), 0);
   }
 
   function buildCards() {
@@ -431,6 +466,18 @@ function initScreen4(el) {
           </div>
         </div>
         <div class="participant-status ${p.paid ? '' : 'pending'}">${p.paid ? '✓ закинул' : 'ждём'}</div>`;
+
+      // кнопка «Напомнить» — не отмечает оплату и не запускает long-press
+      const remindBtn = document.createElement('button');
+      remindBtn.type = 'button';
+      remindBtn.className = 'btn-remind';
+      remindBtn.textContent = 'Напомнить';
+      remindBtn.addEventListener('pointerdown', e => e.stopPropagation());
+      remindBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        openReminder(p, remindBtn);
+      });
+      card.querySelector('.participant-info').appendChild(remindBtn);
 
       // tap = mark paid
       card.addEventListener('click', () => {
@@ -481,7 +528,7 @@ function initScreen4(el) {
   });
 
   newBtn.addEventListener('click', () => {
-    Object.assign(state, { total: 0, currency: '₸', items: [], participants: [] });
+    Object.assign(state, { id: null, total: 0, currency: '₸', items: [], participants: [] });
     location.hash = '';
     showScreen(1);
   });
@@ -491,12 +538,7 @@ function initScreen4(el) {
 }
 
 function saveHistory() {
-  const key = 'razdelit-history';
-  try {
-    const history = JSON.parse(localStorage.getItem(key) || '[]');
-    history.unshift({ ...state, date: new Date().toISOString() });
-    localStorage.setItem(key, JSON.stringify(history.slice(0, 10)));
-  } catch {}
+  saveSession({ ...state });   // upsert по state.id; телефоны остаются только локально
 }
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
